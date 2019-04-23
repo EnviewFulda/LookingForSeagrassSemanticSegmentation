@@ -1,0 +1,11 @@
+{
+	"batchSize":1,
+	"steps":6000,
+	"dataset":"Seagrass",
+	"classes":2,
+	"neuralNetwork":"deeplabV3plusSSMobile",
+	"learningRate":0.001,
+    "threadCount":12,
+	"epochs":100,
+	"gpu":"0"
+}

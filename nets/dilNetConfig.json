@@ -1,0 +1,11 @@
+{
+	"batchSize":4,
+	"steps":6000,
+	"dataset":"Seagrass",
+	"classes":2,
+	"neuralNetwork":"dilNet",
+	"learningRate":0.001,
+    "threadCount":12,
+	"epochs":140,
+	"gpu":"0"
+}
