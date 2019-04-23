@@ -1,5 +1,8 @@
-# Tensorflow for semantic segmentation. 
+# LookingForSeagrass with Semantic Segmentation 
+This is the code which corresponds to the Seagrass Semantic Segmentation paper <URL> which was puplished at the IEEE/OCENs conference 2019 in Marseille
 
+
+# Documentation for usage
 Tensorflow is structured in it`s components:
 
 * graph.py - Builds the static graph of tensorflow
@@ -8,33 +11,33 @@ Tensorflow is structured in it`s components:
 * train.py - Contains the train loop for each epoch
 * nnUtils.py - Provides builders for the different layers e.g. pooling layer
 * evaluate.py - Takes test data and evaluates the trained model for metrics in metricsSemseg.py
-* predict.py - Takes one image("predict.png") and uses the trained model to create the segmentated  image
+* predict.py - Takes one image and uses the trained model to create the segmentated image
+* sanityCheck - Predicts 60 images from the test set and displays them. The corresponding ground-truth is also displayed.
 
-I recreated different network architectures from papers descriptions:
+Recreated network architectures from papers descriptions:
 
-* [denseNet.py](https://arxiv.org/pdf/1611.09326.pdf)
 * [dilNet.py](https://arxiv.org/pdf/1511.07122.pdf)
-* [refineNet.py](http://openaccess.thecvf.com/content_cvpr_2017/papers/Lin_RefineNet_Multi-Path_Refinement_CVPR_2017_paper.pdf)
-* [segNet.py](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7803544)
 * [uNet.py](https://arxiv.org/pdf/1505.04597.pdf)
-
 
 Usage:
 
 ```
-python3 main.py <MODE> <NeuralNetwork>
+import main
+main.deepSS(<MODE>, <Neural Network Name>)
+
 ```
 
-Whereas MODE can be either train, predict or eval. The names of the neural networks are the filename without the .py extension. Information about the modes:
+Whereas MODE(first parameter) can be either train, predict, eval or sanityCheck. The names of the neural networks are the filename without the .py extension. Information about the modes:
 * train - trains the current neural network with the current dataset
 * predict - creates an segmented image with the name "predict.png" and outputs it in the root folder
 * eval - evaluates the test split of the dataset with the metrics in metricsSemSeg.py
-* serialize - serializes the dataset(pre-processed) into an numpy object. This object can be loaded into memory thus accelerating the training process immensely. Works only when in config the attribute "serializedObject" is set to false otherwise it tries to read a serialized object.
 
 Example call:
 
 ```
-python3 main.py train refineNet
+import main
+main.deepSS("eval","deeplabV3plusSS")
+
 ```
 
 The model is saved into a folder named models which is two directories above relative to the main file. The same for the tensorflow log files which are located in ../../logs and the dataset folder in ../../data.
@@ -47,6 +50,7 @@ Main JSON config file:
 * classes: How many classes are to be differentiated with the model,
 * neuralNetwork: Name of the neural network,
 * learningRate: Float for the learning rate,
+* threads: Int, how many CPU threads should be used for data provider.
 * epochs: How many epochs the model should be trained with,
 * gpu: GPU number
 
@@ -59,11 +63,9 @@ Dataset JSON config file:
 * x: int, x value of the to be used image,
 * y: int, y value of the to be used image,
 * imageChannels: int, how many channels does the input image have,
-* preProcessedPath": Path of already pre-processed images,
 * downsize: String, "True" when the images should be downsized, "False" when not,
 * classes : How many classes are to be differentiated with the model,
 * path: Relative path to the dataset foler,
-* serializedObject: Wether the dataset is serialized into a numpy object,
 * fileName: Filename of the serialized object,
 * images: Subfolder of the train input images,
 * labels: Subfolder of the label input images(Ground-truth),
