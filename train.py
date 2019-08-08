@@ -4,10 +4,15 @@ import numpy as np
 import datetime
 import cv2 
 
-from predict import predict
+from LookingForSeagrassSemanticSegmentation.predict import predict
 
 # one training epoch and validation afterwards
-def doTrain(epoch, sess, graph, config, data, modelFileName):
+def doTrain(epoch, sess, graph, config, data, modelFileName, scr):
+    training_status_list = [
+
+    ]
+
+
 
     accuracySum = 0
     step = 1
@@ -21,7 +26,6 @@ def doTrain(epoch, sess, graph, config, data, modelFileName):
     
     iterator = graph["preFetchIterators"][0]
     nextImgData = iterator.get_next()
-    
     for batchIdx in range(trainSize):
 
         start = time.time()
@@ -33,6 +37,7 @@ def doTrain(epoch, sess, graph, config, data, modelFileName):
 
             if data.config["tfPrefetch"]:
                 try:
+                    
                     imgData  = sess.run(nextImgData)
                     if imgData[0].shape[0] == config["batchSize"]:
                         _imageData = imgData[0]
@@ -56,23 +61,33 @@ def doTrain(epoch, sess, graph, config, data, modelFileName):
             end = time.time() 
           
         else:
-            print("SKIPPED INVALID STEP: ", step)    
+            print("SKIPPED INVALID STEP: ", step)  
+            scr.logger.info("SKIPPED INVALID STEP: " + str(step))  
         
-        if step % int(trainSize/10) == 0:
+        # every 10 steps print training status
+        # if step % int(trainSize/10) == 0:
+        if ((step % int(trainSize/2)) == 0):
             summary, _loss, _train_acc = sess.run([graph["mergedLog"], graph["loss"], graph["accuracy"]], feed_dict=feed_dict)
-            
-            
+
+
             train_acc.append(_train_acc*100)
             loss.append(_loss)
             graph["logWriter"].add_summary(summary, step)
-
-
             status = "Epoch : "+str(epoch)+" || Step: "+str(step)+"/"+ str(trainSize)
             status += " || loss:"+str(round(np.mean(np.array(loss)), 5))+" || train_accuracy:"+ str(round(np.mean(np.array(train_acc)), 5))
             status += "% || ETA: "+str(datetime.timedelta(seconds=((end-start)*((trainSize)-step))))
-
             # ends with \r to delete the older line so the new line can be printed
-            print(status, end="\r")                        
+            print(status, end="\r")              
+            scr.logger.info("TRAINING STATUS")          
+            scr.logger.info(status)
+            training_status_list.append(
+                {
+                    "step": str(step),
+                    "loss": str(round(np.mean(np.array(loss)), 5)),
+                    "train_accuracy": str(round(np.mean(np.array(train_acc)), 5)),
+                    "ETA": str(datetime.timedelta(seconds=((end-start)*((trainSize)-step))))
+                }
+            )
      
         if step >= trainSize:
             break
@@ -98,4 +113,5 @@ def doTrain(epoch, sess, graph, config, data, modelFileName):
 
     accuracy = round(np.mean(np.array(acc)), 3)
     print("\nvalidation_accuracy: "+str(accuracy))
-    return accuracy, round(np.mean(np.array(loss)), 5)
+    scr.logger.info("\nvalidation_accuracy: "+str(accuracy))
+    return accuracy, round(np.mean(np.array(loss)), 5), training_status_list

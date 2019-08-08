@@ -6,6 +6,9 @@
 	"neuralNetwork":"deeplabV3plusSS",
 	"learningRate":0.001,
     "threadCount":12,
-	"epochs":140,
+	"epochs":200,
 	"gpu":"0"
 }
+
+
+

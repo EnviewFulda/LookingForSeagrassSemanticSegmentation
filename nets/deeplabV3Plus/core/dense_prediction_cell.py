@@ -28,7 +28,7 @@ from __future__ import print_function
 
 import tensorflow as tf
 
-from nets.deeplabV3Plus.core import utils
+from LookingForSeagrassSemanticSegmentation.nets.deeplabV3Plus.core import utils
 
 slim = tf.contrib.slim
 

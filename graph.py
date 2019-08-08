@@ -2,10 +2,11 @@ import tensorflow as tf
 import importlib
 import numpy as np
 #from netFCN import net
+from LookingForSeagrassSemanticSegmentation.nets.deeplabV3plusSS import net
 
-def buildGraph(data, config, MODE):
-
-    net = importlib.import_module("nets."+config["neuralNetwork"]).net
+def buildGraph(data, config, MODE, scr):
+    # net_path = scr.get_path("LookingForSeagrassSemanticSegmentation/nets/deeplabV3plusSS")
+    # net = importlib.import_module("nets."+config["neuralNetwork"]).net
 
     # REAL TENSORFLOW - low API
 
@@ -54,6 +55,7 @@ def buildGraph(data, config, MODE):
             for _type in ["train", "validation", "test"]:
                 
                 print("Creating ", _type, " dataset...")
+                scr.logger.info("Creating " + str(_type) +  " dataset...")
                 imageFilenames = tf.constant(data.imageData[_type])
                 labelsFileNames = tf.constant(data.imageData[_type+"Label"])
 

@@ -7,7 +7,7 @@ from PIL import Image
 import sys 
 import json
 from time import sleep
-from IPython.display import display 
+# from IPython.display import display 
 
 
 class Data:
@@ -35,20 +35,23 @@ class Data:
             self.pathImages["validationLabel"] += self.config["labels"]
 
         if not self.config["serializedObject"]:
-            
-            if self.config["name"] == "Seagrass":       
-                jsonData = json.load(open(self.config["path"]+"train.json"))
+            if self.config["name"] == "Seagrass":    
+                #jsonData = json.load(open(self.config["path"]+"trainSmall.json"))
+                jsonData = json.load(open(self.train_json_path))
                 trainData = list(map(lambda i:os.path.basename(i["image"]) if i["depth"] <= float(self.config["depth"]) else None, jsonData))
                 labelData = list(map(lambda i:os.path.basename(i["ground-truth"]) if i["depth"] <= float(self.config["depth"]) else None, jsonData))
-
-                jsonData = json.load(open(self.config["path"]+"test.json"))
+                # jsonData = json.load(open(self.config["path"]+"testSmall.json"))
+                jsonData = json.load(open(self.eval_json_path))
                 testData = list(map(lambda i:os.path.basename(i["image"]) if i["depth"] <= float(self.config["depth"]) else None, jsonData))
                 testLabelData = list(map(lambda i:os.path.basename(i["ground-truth"]) if i["depth"] <= float(self.config["depth"]) else None, jsonData))
-
-                jsonData = json.load(open(self.config["path"]+"validate.json"))
+                # jsonData = json.load(open(self.config["path"]+"validateSmall.json"))
+                # jsonData_path = self.scr.get_path("validate.json")
+                # jsonData = json.load(open(jsonData_path))
+                # no Validation
+                jsonData = json.load(open(self.eval_json_path))
                 validateData = list(map(lambda i:os.path.basename(i["image"]) if i["depth"] <= float(self.config["depth"]) else None, jsonData))
                 validateLabelData = list(map(lambda i:os.path.basename(i["ground-truth"]) if i["depth"] <= float(self.config["depth"]) else None, jsonData))
-                
+        
                 self.imageData = {
                     "train": list(filter(lambda i:i != None, trainData)),
                     "trainLabel": list(filter(lambda i:i != None, labelData)),
@@ -57,7 +60,7 @@ class Data:
                     "validation": list(filter(lambda i:i != None, validateData)),
                     "validationLabel": list(filter(lambda i:i != None, validateLabelData))
                 }
-                
+
                     
                 
             else:
@@ -79,33 +82,42 @@ class Data:
                     "validation": trainDataFiles[trainElements+testElements if testElements > 0 else trainElements:],
                     "validationLabel": trainLabelDataFiles[trainElements+testElements if testElements > 0 else trainElements:],
                 }
-
-                
-            self.config["trainSize"] = len(self.imageData["train"])
-            self.config["testSize"] = len(self.imageData["test"])
-            self.config["validationSize"] = len(self.imageData["validation"])
-
-            print("trainSize: ", self.config["trainSize"], " Testsize: ", self.config["testSize"], "Validationsize: ", self.config["validationSize"])
+            try: 
+                self.config["trainSize"] = len(self.imageData["train"])
+                self.config["testSize"] = len(self.imageData["test"])
+                self.config["validationSize"] = len(self.imageData["validation"])
+                print("trainSize: ", self.config["trainSize"], " Testsize: ", self.config["testSize"], "Validationsize: ", self.config["validationSize"])
+                self.scr.logger.info("trainSize: "+ str(self.config["trainSize"])+ " Testsize: "+ str(self.config["testSize"])+ "Validationsize: "+ str(self.config["validationSize"]))
+            except Exception as e:
+                self.scr.logger.info("DATA EXCEPTION")
+                self.scr.logger.info(str(e))
+                pass
             
         else:
-
+            self.scr.logger.info("H")
             self.imageData = np.load(self.config["path"]+self.config["fileName"]+".npy")
             self.config["trainSize"] = len(self.imageData.item().get("train"))
             self.config["testSize"] = len(self.imageData.item().get("test"))
             self.config["validationSize"] = len(self.imageData.item().get("validation"))
             print("Finished loading dataset...")
+            self.scr.logger.info("Finished loading dataset...")
 
 
     # string configPath - path of the json file which describes the dataset
-    def __init__(self, configPath):
-
+    def __init__(self, configPath, scr, labeled_images_path=None, train_json_path= None,eval_json_path=None, images_path=None ):
+        self.labeled_images_path = labeled_images_path
+        self.train_json_path = train_json_path
+        self.eval_json_path = eval_json_path
+        self.images_path = images_path
         try:
             self.config = json.load(open(configPath))    
         except:
             raise "Wrong path for data config file given!"
 
-    
+        self.scr = scr
         self.loadDataset()
+
+        
 
     # gets a value from the config file with its given name
     def getConfig(self, name):
@@ -113,9 +125,14 @@ class Data:
 
     
     def getImageTuple(self, imageFilename, labelFilename):
-        
-        img = cv2.imread(self.pathImages["train"]+imageFilename.decode())
-        labelImg = cv2.imread(self.pathImages["trainLabel"]+labelFilename.decode())
+        # img = cv2.imread(self.pathImages["train"]+imageFilename.decode())
+        img = cv2.imread(self.images_path + imageFilename.decode())
+        # labelImg = cv2.imread(self.pathImages["trainLabel"]+labelFilename.decode())
+        #labelImg = cv2.imread(self.scr.get_path("images_labeled/")+labelFilename.decode())
+        # self.scr.logger.info(self.labeled_images_path +labelFilename.decode())
+        labelImg = cv2.imread(self.labeled_images_path +labelFilename.decode())
+
+
         if self.config["downsize"]:
             img = cv2.resize(img, (self.config["x"], self.config["y"]), interpolation=cv2.INTER_AREA)
             labelImg = cv2.resize(labelImg, (self.config["x"], self.config["y"]), interpolation=cv2.INTER_AREA)

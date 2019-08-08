@@ -1,6 +1,9 @@
 import tensorflow as tf
-import nnUtils as util
-from nets.deeplabV3Plus import model, common
+# import nnUtils as util
+# from nets.deeplabV3Plus import model, common
+
+from LookingForSeagrassSemanticSegmentation.nets.deeplabV3Plus import model, common
+
 
 def net(image, classes, MODE):    
     # Note: arg_scope is optional for inference.

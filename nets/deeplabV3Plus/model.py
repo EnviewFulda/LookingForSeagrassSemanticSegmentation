@@ -53,9 +53,9 @@ Alan L. Yuille (* equal contribution)
 (https://arxiv.org/abs/1412.7062)
 """
 import tensorflow as tf
-from nets.deeplabV3Plus.core import dense_prediction_cell
-from nets.deeplabV3Plus.core import feature_extractor
-from nets.deeplabV3Plus.core import utils
+from LookingForSeagrassSemanticSegmentation.nets.deeplabV3Plus.core import dense_prediction_cell
+from LookingForSeagrassSemanticSegmentation.nets.deeplabV3Plus.core import feature_extractor
+from LookingForSeagrassSemanticSegmentation.nets.deeplabV3Plus.core import utils
 
 
 slim = tf.contrib.slim

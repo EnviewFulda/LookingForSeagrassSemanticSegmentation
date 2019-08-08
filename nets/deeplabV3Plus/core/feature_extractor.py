@@ -17,7 +17,7 @@
 import functools
 import tensorflow as tf
 
-from nets.deeplabV3Plus.core import xception
+from LookingForSeagrassSemanticSegmentation.nets.deeplabV3Plus.core import xception
 from tensorflow.contrib.slim.nets import resnet_utils
 
 
