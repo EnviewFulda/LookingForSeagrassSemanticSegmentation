@@ -1,6 +1,20 @@
 # LookingForSeagrass with Semantic Segmentation 
 This is the code which corresponds to the Seagrass Semantic Segmentation paper <URL> which was puplished at the IEEE/OCENs conference 2019 in Marseille
 
+```
+@INPROCEEDINGS{8867064,
+author={F. {Weidmann} and J. {Jäger} and G. {Reus} and S. T. {Schultz} and C. {Kruschel} and V. {Wolff} and K. {Fricke-Neuderth}},
+booktitle={OCEANS 2019 - Marseille},
+title={A Closer Look at Seagrass Meadows: Semantic Segmentation for Visual Coverage Estimation},
+year={2019},
+volume={},
+number={},
+pages={1-6},
+keywords={Convolution;Semantics;Image segmentation;Training;Decoding;Kernel;Encoding},
+doi={10.1109/OCEANSE.2019.8867064},
+ISSN={},
+month={June},}
+```
 
 # Documentation for usage
 Tensorflow is structured in it`s components:
